@@ -1,0 +1,39 @@
+{
+  "name": "docx-temp-wordpress-app",
+  "version": "1.0.0",
+  "description": "For docx template pages of a WordPress site",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Kim Ramirez",
+  "license": "ISC",
+  "dependencies": {
+    "@babel/core": "^7.17.5",
+    "blob-util": "^2.0.2",
+    "docx-templates": "^4.9.1",
+    "docxtemplater": "^3.29.0",
+    "easy-template-x": "^2.1.0",
+    "file-system": "^2.2.2",
+    "fs-web": "^1.0.1",
+    "pizzip": "^3.1.1"
+  },
+  "type": "module",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-preset-es2015": "^6.24.1",
+    "babelify": "^8.0.0"
+  },
+  "browserify": {
+    "transform": [
+      [
+        "babelify",
+        {
+          "presets": [
+            "es2015"
+          ]
+        }
+      ]
+    ]
+  }
+}
