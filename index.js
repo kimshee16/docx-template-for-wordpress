@@ -9,131 +9,129 @@ function loadFile(url, callback) {
 
 document.getElementById("nextBtn").style.display = "none";
 
-document.getElementById("get-parameters").onclick = function() {
-   placeholders = [];
+// otherBtn button click event - it will create new file input for other template upload
+document.getElementById("otherBtn").onclick = function() {
+  let fileinput = document.createElement("input");
+  fileinput.setAttribute("type", "file");
+  fileinput.setAttribute("class", "load-file");
+  document.getElementsByClassName("tab")[0].appendChild(fileinput);
 
-   var file2 = document.getElementById("load-file").files[0];
-	  var reader2 = new FileReader();
-	  reader2.onload = function() { 
-		  	loadFile(
-		       reader2.result,
-		       function (error, content) {
-		           if (error) {
-		               throw error;
-		           }
-		           var zip = new PizZip(content);
-		           var doc = new window.docxtemplater(zip);
-		           var text = doc.getFullText();
-		           const myArray = text.split(" ");
-
-		           const InspectModule = require("docxtemplater/js/inspect-module");
-                   const iModule = InspectModule();
-                   const doc1 = new window.docxtemplater(zip, { modules: [iModule] });
-                   const tags1 = iModule.getAllTags();
-                   console.log(tags1);
-
-                   var keys = Object.keys(tags1);
-				   console.log(keys);
-
-				   for (var i = 0; i < keys.length; i++) {
-		                //alert("Detected placeholders: " + keys[i]);
-		                placeholders.push(keys[i]);
-		                let input = document.createElement("input");
-				        input.type = "text";
-				        var i2 = i + 1;
-				        input.placeholder = "Parameter " + i2 + " (" + keys[i] + ")";
-				        input.id = keys[i];
-				        input.setAttribute("class", "placeholdersfield");
-				        //document.getElementById("placeholdersarea").appendChild(input);
-				        //let br = document.createElement("br");
-				        //document.getElementById("placeholdersarea").appendChild(br);
-
-				        //let tab = document.createElement("div");
-				        //tab.setAttribute("class", "tab");
-				        //tab.appendChild(input);
-				        //document.getElementById("tabarea").appendChild(tab);
-
-				        if(i == keys.length - 1) {
-
-				        	let tab = document.createElement("div");
-					        tab.setAttribute("class", "tab");
-					        tab.appendChild(input);
-					        document.getElementById("tabarea").appendChild(tab);
-
-				        } else {
-				        	let tab = document.createElement("div");
-					        tab.setAttribute("class", "tab");
-					        tab.appendChild(input);
-					        document.getElementById("tabarea").appendChild(tab);
-				        }
-
-				        let span = document.createElement("span");
-				        span.setAttribute("class", "step");
-				        document.getElementById("steparea").appendChild(span);
-
-		           }
-		           document.getElementById("nextBtn").style.display = "inline";
-		           document.getElementById("nextBtn").innerHTML = "Next";
-
-                   /*
-		           for (var i = 0; i < myArray.length; i++) {
-		               if(myArray[i].includes("{")) {
-		                   if(myArray[i].includes("}")) {
-		                       alert("Detected placeholders: " + myArray[i]);
-		                       replacer = myArray[i].replace("{", "");
-		                       replacer = replacer.replace("}", "");
-		                       placeholders.push(replacer);
-		                       let input = document.createElement("input");
-				               input.type = "text";
-				               input.placeholder = replacer;
-				               input.id = replacer;
-				               input.setAttribute("class", "placeholdersfield");
-				               document.getElementById("placeholdersarea").appendChild(input);
-				               let br = document.createElement("br");
-				               document.getElementById("placeholdersarea").appendChild(br);
-		                   }
-		               }
-		           }
-		           console.log(placeholders);
-		           */
-		       }
-		   );
-	  };
-	  reader2.readAsDataURL(file2);
-	  
+  let br =  document.createElement("br");
+  document.getElementsByClassName("tab")[0].appendChild(br);
 }
 
-document.getElementById("done-button").onclick = function(e) {
-  	  var file = document.getElementById("load-file").files[0];
-	  var reader = new FileReader();
-	  reader.onload = function() { 
-	    var blob = window.dataURLtoBlob(reader.result);
-		const templateFile = blob;
-		//var name = document.getElementById("name").value;
-		//var age = document.getElementById("age").value;
-		//const data = {
-		//	    "name": name,
-		//	    "age": age
-		//	};
-		const data = {};
-		var phf = document.getElementsByClassName("placeholdersfield");
-		for(var x = 0; x < phf.length; x++) {
-			data[placeholders[x]] = phf[x].value;
-		}
-		
-		console.log(data);
+// get-parameters button click event
+document.getElementById("get-parameters").onclick = function() {
+  var loadfile = document.getElementsByClassName("load-file");
+  for(var m = 0; m < loadfile.length; m++) {
+      var file2 = document.getElementsByClassName("load-file")[m].files[0];
+      getParameters(file2, m);
+  }
+}
 
-	    const handler = new TemplateHandler();
-		async function doc1 ()
-		{
-		  const doc = await handler.process(templateFile, data);
-		  saveFile('myTemplate - output.docx', doc);
-		};
-		doc1();
-	  };
-	  reader.readAsDataURL(file);
+// function for getting the parameters from the docx template uploaded
+function getParameters(file2, index2) {
+          var reader2 = new FileReader();
+          reader2.onload = function() {
+          loadFile(
+             reader2.result,
+             function (error, content) {
+                 if (error) {
+                     throw error;
+                 }
+                 var zip = new PizZip(content);
+                 var doc = new window.docxtemplater(zip);
+                 var text = doc.getFullText();
+                 const myArray = text.split(" ");
+
+                 const InspectModule = require("docxtemplater/js/inspect-module");
+                     const iModule = InspectModule();
+                     const doc1 = new window.docxtemplater(zip, { modules: [iModule] });
+                     const tags1 = iModule.getAllTags();
+                     console.log(tags1);
+
+                     var keys = Object.keys(tags1);
+
+             var checkph = "";
+             for (var i = 0; i < keys.length; i++) {
+                      var checkph = checkExistingPlaceholder(keys[i]);
+                      if(checkph == false) {
+                          placeholders.push(keys[i]);
+                          let input = document.createElement("input");
+                          input.type = "text";
+                          var i2 = i + 1;
+                          input.placeholder = "Parameter " + i2 + " (" + keys[i] + ")";
+                          input.id = keys[i];
+                          input.setAttribute("class", "placeholdersfield");
+
+                          if(i == keys.length - 1) {
+                            let tab = document.createElement("div");
+                            tab.setAttribute("class", "tab");
+                            tab.appendChild(input);
+                            document.getElementById("tabarea").appendChild(tab);
+                          } else {
+                            let tab = document.createElement("div");
+                            tab.setAttribute("class", "tab");
+                            tab.appendChild(input);
+                            document.getElementById("tabarea").appendChild(tab);
+                          }
+
+                          let span = document.createElement("span");
+                          span.setAttribute("class", "step");
+                          document.getElementById("steparea").appendChild(span);
+                      }
+                 }
+                 document.getElementById("nextBtn").style.display = "inline";
+                 document.getElementById("get-parameters").style.display = "none";
+                 if(index2 == (document.getElementsByClassName("load-file").length-1)) {
+                    document.getElementById("nextBtn").click();
+                 }
+             }
+         );
+      };
+      reader2.readAsDataURL(file2);
+}
+
+// to check if the placeholder/parameter is already existing
+function checkExistingPlaceholder(keyToCheck) {
+  return placeholders.includes(keyToCheck);
+}
+
+// done-button id click - for processing and downloading the docx template with value on parameter
+document.getElementById("done-button").onclick = function(e) {
+	  var loadfile = document.getElementsByClassName("load-file");
+    for(var m = 0; m < loadfile.length; m++) {
+        var file = document.getElementsByClassName("load-file")[m].files[0];
+        processFile(file);
+    }
+    document.getElementById("new-button").style.display = "inline";
 };
 
+// to process the data from form inputs and template then it will automatically download the new docx file.
+function processFile(file) {
+    var reader = new FileReader();
+    reader.onload = function() { 
+    var blob = window.dataURLtoBlob(reader.result);
+    const templateFile = blob;
+    const data = {};
+    var phf = document.getElementsByClassName("placeholdersfield");
+    for(var x = 0; x < phf.length; x++) {
+      data[placeholders[x]] = phf[x].value;
+    }
+    const handler = new TemplateHandler();
+    async function doc1 ()
+    {
+      const doc = await handler.process(templateFile, data);
+      var filename2 = file.name;
+      var filearray = filename2.split(".");
+      saveFile(filearray[0]+"_filled.docx", doc);
+    };
+    doc1();
+    };
+    reader.readAsDataURL(file);
+}
+
+// function for saving/downloading the new docx templates
 function saveFile(filename, blob) {
     const blobUrl = URL.createObjectURL(blob);
     let link = document.createElement("a");
@@ -151,6 +149,7 @@ function saveFile(filename, blob) {
 var currentTab = 0; // Current tab is set to be the first tab (0)
 showTab(currentTab); // Display the current tab
 
+// to show the tab either previous or next tab
 function showTab(n) {
   console.log(n);
   // This function will display the specified tab of the form...
@@ -159,26 +158,29 @@ function showTab(n) {
   //... and fix the Previous/Next buttons:
   if (n == 0) {
     document.getElementById("prevBtn").style.display = "none";
-  } else {
+  } 
+  else if (n == (x.length-1)) {
+    document.getElementById("prevBtn").style.display = "none";
+  }
+  else {
     document.getElementById("prevBtn").style.display = "inline";
   }
   if (n == (x.length - 1)) {
-    document.getElementById("nextBtn").innerHTML = "Submit";
+    //document.getElementById("nextBtn").innerHTML = "Submit";
   } else {
     document.getElementById("nextBtn").innerHTML = "Next";
   }
-
+/*
   if (n == (x.length - 1)) {
     document.getElementById("prevBtn").style.display = "none";
     document.getElementById("nextBtn").style.display = "none";
   }
-
+*/
   //... and run a function that will display the correct step indicator:
   fixStepIndicator(n)
 }
 
 document.getElementById("prevBtn").onclick = function() {
-//function nextPrev(n) {
   // This function will figure out which tab to display
   var n = document.getElementById("prevvalue").value;
   n = parseInt(n);
@@ -200,6 +202,34 @@ document.getElementById("prevBtn").onclick = function() {
 }
 
 document.getElementById("nextBtn").onclick = function() {
+  // This function will figure out which tab to display
+  var n = document.getElementById("nextvalue").value;
+  n = parseInt(n);
+  var x = document.getElementsByClassName("tab");
+  // Exit the function if any field in the current tab is invalid:
+  if (n == 1 && !validateForm()) return false;
+  // Hide the current tab:
+  x[currentTab].style.display = "none";
+  // Increase or decrease the current tab by 1:
+  currentTab = currentTab + n;
+  // if you have reached the end of the form...
+
+  document.getElementById("otherBtn").style.display = "none";
+  if (currentTab == (x.length - 1)) {
+    // ... the form gets submitted:
+    //document.getElementById("regForm").submit();
+    //return false;
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("new-button").style.display = "none";
+    document.getElementById("done-button").style.display = "inline";
+  }
+
+  // Otherwise, display the correct tab:
+  showTab(currentTab);
+}
+
+function nextbuttonClick() {
 //function nextPrev(n) {
   // This function will figure out which tab to display
   var n = document.getElementById("nextvalue").value;
@@ -213,11 +243,14 @@ document.getElementById("nextBtn").onclick = function() {
   currentTab = currentTab + n;
   // if you have reached the end of the form...
 
+  document.getElementById("otherBtn").style.display = "none";
   if (currentTab == (x.length - 1)) {
     // ... the form gets submitted:
     //document.getElementById("regForm").submit();
     //return false;
-    document.getElementById("new-button").style.display = "inline";
+    document.getElementById("prevBtn").style.display = "none";
+    document.getElementById("nextBtn").style.display = "none";
+    document.getElementById("new-button").style.display = "none";
     document.getElementById("done-button").style.display = "inline";
   }
 
@@ -226,6 +259,7 @@ document.getElementById("nextBtn").onclick = function() {
 }
 
 document.getElementById("new-button").onclick = function() {
+  placeholders = [];
 	location.reload();
 }
 
@@ -260,5 +294,3 @@ function fixStepIndicator(n) {
   //... and adds the "active" class on the current step:
   x[n].className += " active";
 }
-
-//browserify().transform("babelify", {presets: ["es2015"]});

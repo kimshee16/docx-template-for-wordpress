@@ -84,26 +84,22 @@
 	<input type="hidden" id="prevvalue" value="-1">
 	<input type="hidden" id="nextvalue" value="1">
 	<form id="regForm">
-	  <!-- One "tab" for each step in the form: -->
 	  <div id="tabarea">
 	  	<div class="tab">
-		    <input type="file" id="load-file"><br>
-			<button id="get-parameters" type="button">Get Parameters</button>
-			<!--<div id="placeholdersarea"></div>-->
-			
+		    <input type="file" class="load-file"><br>
 		</div>
 	  </div>
+	  <br>
 	  <div style="overflow:auto;">
 	    <div style="float:right;">
-	      <!--<button type="button" id="prevBtn" onclick="nextPrev(-1)" type="button">Previous</button>-->
-	      <!--<button type="button" id="nextBtn" onclick="nextPrev(1)" type="button">Next</button>-->
+	      <button id="otherBtn" type="button">Upload Another Document</button>
 	      <button id="prevBtn" type="button">Previous</button>
+	      <button id="get-parameters" type="button">Next</button>
 	      <button id="nextBtn" type="button">Next</button>
-	      <button id="new-button" type="button" style="display: none;">Upload New Document</button>
 	      <button id="done-button" type="button" style="display: none;">Process & Download DOCX</button>
+	      <button id="new-button" type="button" style="display: none;">Upload New Document</button>
 	    </div>
 	  </div>
-	  <!-- Circles which indicates the steps of the form: -->
 	  <div style="text-align:center;margin-top:40px;" id="steparea">
 	    <span class="step"></span>
 	  </div>
